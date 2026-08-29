@@ -1,0 +1,828 @@
+/* ---------------------------------------------------------------
+   Design tokens
+   Dark charcoal base (not pure black — easier on the eyes for a
+   day-to-day tool), one signature violet/cyan glow reserved for
+   "today" and active states, list colors drawn from the same
+   family so the calendar never looks noisy.
+------------------------------------------------------------------ */
+:root {
+  --bg: #0f1116;
+  --surface: #171a21;
+  --surface-raised: #1f2330;
+  --border: #2a2f3d;
+  --border-soft: #232733;
+  --text: #eef0f5;
+  --text-muted: #8b91a5;
+  --text-faint: #565d70;
+
+  --accent: #8b5cf6;
+  --accent-soft: rgba(139, 92, 246, 0.18);
+  --accent-2: #22d3ee;
+  --today: #fbbf24;
+
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+
+  --font-ui: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  color-scheme: dark;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-ui);
+  -webkit-tap-highlight-color: transparent;
+  overscroll-behavior-y: contain;
+}
+
+button,
+input {
+  font-family: inherit;
+  color: inherit;
+}
+
+button {
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.app {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  max-width: 1040px;
+  margin: 0 auto;
+  border-inline: 1px solid var(--border-soft);
+}
+
+.app-body {
+  flex: 1;
+  display: flex;
+  min-height: 0;
+}
+
+/* ---------------------------------------------------------------
+   Header
+------------------------------------------------------------------ */
+.app-header {
+  flex-shrink: 0;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  padding: max(env(safe-area-inset-top), 14px) 12px 8px;
+}
+
+.app-header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.app-header-row.secondary {
+  margin-top: 10px;
+}
+
+.header-center {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.header-label {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.icon-btn,
+.nav-btn {
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  border-radius: var(--radius-sm);
+  font-size: 18px;
+  color: var(--text);
+}
+
+.icon-btn:disabled {
+  color: var(--text-faint);
+  cursor: default;
+}
+
+.icon-btn:not(:disabled):active,
+.nav-btn:active {
+  background: var(--surface-raised);
+}
+
+.level-pips {
+  display: flex;
+  gap: 4px;
+  background: var(--surface-raised);
+  border-radius: 999px;
+  padding: 3px;
+}
+
+.level-pip {
+  padding: 5px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  text-transform: capitalize;
+  color: var(--text-muted);
+}
+
+.level-pip.active {
+  background: var(--accent);
+  color: white;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.text-btn {
+  padding: 6px 10px;
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.text-btn.active,
+.text-btn:active {
+  color: var(--text);
+  background: var(--surface-raised);
+}
+
+/* ---------------------------------------------------------------
+   Todo drawer
+------------------------------------------------------------------ */
+.todo-drawer {
+  flex-shrink: 0;
+  width: 300px;
+  background: var(--surface);
+  border-left: 1px solid var(--border);
+  padding: 10px 12px 12px;
+  overflow-y: auto;
+  transition: background 0.15s ease;
+}
+
+.todo-drawer.drop-ready {
+  background: var(--accent-soft);
+}
+
+@media (max-width: 680px) {
+  .app-body {
+    flex-direction: column;
+  }
+
+  .todo-drawer {
+    order: -1;
+    width: auto;
+    max-height: 42vh;
+    border-left: none;
+    border-bottom: 1px solid var(--border);
+  }
+}
+
+.list-tabs {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  padding-bottom: 8px;
+  margin-bottom: 8px;
+  border-bottom: 1px solid var(--border-soft);
+}
+
+.list-tab {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  font-size: 13px;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+.list-tab.active {
+  color: var(--text);
+  border-color: var(--list-color, var(--accent));
+  background: var(--surface-raised);
+}
+
+.list-color-input {
+  width: 12px;
+  height: 12px;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  flex-shrink: 0;
+  cursor: pointer;
+  background: none;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.list-color-input::-webkit-color-swatch-wrapper {
+  padding: 0;
+  border-radius: 50%;
+}
+
+.list-color-input::-webkit-color-swatch {
+  border: none;
+  border-radius: 50%;
+}
+
+.list-color-input::-moz-color-swatch {
+  border: none;
+  border-radius: 50%;
+}
+
+.list-tab-name {
+  color: inherit;
+  font-size: inherit;
+  padding: 0;
+  cursor: pointer;
+}
+
+.list-tab.add-list {
+  color: var(--accent-2);
+  border-style: dashed;
+}
+
+.new-list-form input {
+  width: 120px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  border: 1px solid var(--accent-2);
+  background: var(--surface-raised);
+  font-size: 13px;
+  outline: none;
+}
+
+.new-todo-form {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+
+.new-todo-form input {
+  flex: 1;
+  padding: 9px 12px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border);
+  background: var(--surface-raised);
+  font-size: 14px;
+  outline: none;
+}
+
+.new-todo-form input:focus {
+  border-color: var(--accent);
+}
+
+.new-todo-form button {
+  padding: 9px 14px;
+  border-radius: var(--radius-md);
+  background: var(--accent);
+  color: white;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.empty-hint {
+  color: var(--text-faint);
+  font-size: 13px;
+  line-height: 1.5;
+  margin: 4px 2px;
+}
+
+.todo-items {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.todo-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 10px;
+  border-radius: var(--radius-sm);
+  border-left: 3px solid var(--accent);
+  background: var(--surface-raised);
+  touch-action: none;
+  user-select: none;
+}
+
+.todo-item.dragging {
+  opacity: 0.5;
+}
+
+.todo-item.completed .todo-text {
+  text-decoration: line-through;
+  color: var(--text-faint);
+}
+
+.todo-main {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.todo-text {
+  font-size: 14px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.todo-schedule {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  color: var(--text-muted);
+  min-width: 0;
+}
+
+.todo-schedule-text {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.todo-unschedule {
+  flex-shrink: 0;
+  color: var(--text-faint);
+  font-size: 13px;
+  line-height: 1;
+  padding: 0 2px;
+}
+
+.todo-unschedule:active {
+  color: var(--text);
+}
+
+.todo-delete {
+  color: var(--text-faint);
+  font-size: 18px;
+  line-height: 1;
+  padding: 2px 6px;
+}
+
+/* ---------------------------------------------------------------
+   Calendar area (shared)
+------------------------------------------------------------------ */
+.calendar-view {
+  flex: 1;
+  overflow-y: auto;
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+.todo-chip {
+  font-size: 11px;
+  padding: 2px 6px;
+  border-radius: 4px;
+  color: #0f1116;
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.todo-chip.scheduled-chip {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+}
+
+.todo-chip.scheduled-chip.dragging {
+  opacity: 0.5;
+}
+
+.scheduled-chip-text {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.scheduled-chip-remove {
+  cursor: pointer;
+  flex-shrink: 0;
+  color: inherit;
+  opacity: 0.6;
+  font-size: 12px;
+  line-height: 1;
+}
+
+.scheduled-chip-remove:active {
+  opacity: 1;
+}
+
+.todo-chip.more {
+  background: transparent !important;
+  color: var(--text-faint);
+  font-weight: 500;
+}
+
+.todo-chip.small {
+  font-size: 10px;
+  padding: 1px 4px;
+}
+
+/* A todo scheduled with a duration > 1 hour, stretched down over the hour
+   rows it spans. Absolutely positioned so it overflows its own cell without
+   pushing the row taller; pointer-events:none lets drops reach the cell
+   underneath it. */
+.todo-chip.timed-block {
+  position: absolute;
+  top: 1px;
+  left: 2px;
+  right: 2px;
+  z-index: 2;
+  overflow: hidden;
+  white-space: normal;
+  line-height: 1.3;
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+}
+
+.todo-chip.timed-block.dragging {
+  opacity: 0.5;
+}
+
+/* Grab the bottom edge of a scheduled block and drag to change its
+   duration. Re-enables pointer-events just for this strip so the rest of
+   the block still lets drops reach the cell underneath it. */
+.timed-block-handle {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 12px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding-bottom: 2px;
+  cursor: ns-resize;
+  pointer-events: auto;
+  touch-action: none;
+}
+
+.timed-block-handle::after {
+  content: '';
+  width: 22px;
+  height: 3px;
+  border-radius: 2px;
+  background: rgba(15, 17, 22, 0.45);
+}
+
+.timed-block-unschedule {
+  cursor: pointer;
+  position: absolute;
+  top: 1px;
+  right: 1px;
+  z-index: 1;
+  width: 16px;
+  height: 16px;
+  display: grid;
+  place-items: center;
+  border-radius: 4px;
+  color: #0f1116;
+  font-size: 13px;
+  line-height: 1;
+  opacity: 0.55;
+  pointer-events: auto;
+}
+
+.timed-block-unschedule:active {
+  opacity: 1;
+  background: rgba(15, 17, 22, 0.12);
+}
+
+.droppable.is-drop-target {
+  outline: 2px solid var(--accent-2);
+  outline-offset: -2px;
+  background: var(--accent-soft);
+}
+
+/* ---------------------------------------------------------------
+   Month view (home)
+------------------------------------------------------------------ */
+.weekday-row {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  padding: 8px 4px 0;
+}
+
+.weekday-label {
+  text-align: center;
+  font-size: 11px;
+  color: var(--text-faint);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.month-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 3px;
+  padding: 4px;
+}
+
+.month-cell {
+  min-height: 76px;
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  border: 1px solid var(--border-soft);
+  padding: 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.month-cell.outside {
+  opacity: 0.35;
+}
+
+.month-cell.today {
+  border-color: var(--today);
+  box-shadow: 0 0 0 1px var(--today), 0 0 14px -2px var(--today);
+}
+
+.day-number {
+  align-self: flex-start;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.month-cell.today .day-number {
+  background: var(--today);
+  color: #1a1300;
+  font-weight: 700;
+}
+
+.day-todos {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  overflow: hidden;
+}
+
+/* ---------------------------------------------------------------
+   Year view
+------------------------------------------------------------------ */
+.year-view {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+  padding: 12px;
+}
+
+@media (min-width: 480px) {
+  .year-view {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.mini-month {
+  background: var(--surface);
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-md);
+  padding: 10px 8px;
+  text-align: left;
+}
+
+.mini-month-title {
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
+.mini-weekday-row,
+.mini-month-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+}
+
+.mini-weekday-row span {
+  font-size: 8px;
+  color: var(--text-faint);
+  text-align: center;
+}
+
+.mini-day {
+  font-size: 9px;
+  color: var(--text-muted);
+  text-align: center;
+  padding: 2px 0;
+  position: relative;
+}
+
+.mini-day.outside {
+  color: var(--text-faint);
+  opacity: 0.4;
+}
+
+.mini-day.today {
+  color: var(--today);
+  font-weight: 700;
+}
+
+.mini-day.has-events::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: var(--accent-2);
+}
+
+/* ---------------------------------------------------------------
+   Week view
+------------------------------------------------------------------ */
+.week-grid-header,
+.week-allday-row,
+.week-hour-row {
+  display: grid;
+  grid-template-columns: 44px repeat(7, minmax(0, 1fr));
+}
+
+.week-grid-header {
+  position: sticky;
+  top: 0;
+  background: var(--bg);
+  z-index: 1;
+  padding-top: 6px;
+}
+
+.week-day-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 4px 0 8px;
+  border-radius: var(--radius-sm);
+}
+
+.week-day-name {
+  font-size: 10px;
+  color: var(--text-faint);
+  text-transform: uppercase;
+}
+
+.week-day-num {
+  font-size: 14px;
+  width: 24px;
+  height: 24px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+}
+
+.week-day-header.today .week-day-num {
+  background: var(--today);
+  color: #1a1300;
+  font-weight: 700;
+}
+
+.time-gutter {
+  font-size: 10px;
+  color: var(--text-faint);
+  text-align: right;
+  padding-right: 6px;
+}
+
+.small-label {
+  padding-top: 2px;
+}
+
+.week-allday-row {
+  border-bottom: 1px solid var(--border);
+  min-height: 28px;
+}
+
+.week-allday-cell {
+  border-left: 1px solid var(--border-soft);
+  padding: 2px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  overflow: hidden;
+}
+
+.week-scroll {
+  padding-bottom: 24px;
+}
+
+.week-hour-row {
+  border-bottom: 1px solid var(--border-soft);
+  min-height: 40px;
+}
+
+.week-hour-cell {
+  position: relative;
+  border-left: 1px solid var(--border-soft);
+  padding: 1px;
+}
+
+/* ---------------------------------------------------------------
+   Day view
+------------------------------------------------------------------ */
+.day-view {
+  padding: 8px 12px 24px;
+}
+
+.day-allday-cell {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 8px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 4px;
+}
+
+.day-allday-items {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  flex: 1;
+}
+
+.day-hour-row {
+  display: grid;
+  grid-template-columns: 56px 1fr;
+  min-height: 52px;
+  border-bottom: 1px solid var(--border-soft);
+}
+
+.time-label {
+  font-size: 11px;
+  color: var(--text-faint);
+  padding-top: 2px;
+}
+
+.day-hour-cell {
+  position: relative;
+  padding: 3px 4px;
+  border-left: 1px solid var(--border-soft);
+}
+
+/* ---------------------------------------------------------------
+   Signature: a soft pulse on "today", the app's one bit of motion.
+   Respects reduced-motion preference.
+------------------------------------------------------------------ */
+@media (prefers-reduced-motion: no-preference) {
+  .month-cell.today {
+    animation: today-glow 3.2s ease-in-out infinite;
+  }
+}
+
+@keyframes today-glow {
+  0%,
+  100% {
+    box-shadow: 0 0 0 1px var(--today), 0 0 14px -2px var(--today);
+  }
+  50% {
+    box-shadow: 0 0 0 1px var(--today), 0 0 20px 2px var(--today);
+  }
+}

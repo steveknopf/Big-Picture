@@ -1,0 +1,9 @@
+{
+  "appId": "com.stevesart.planner",
+  "appName": "Continuous Vibe Planner",
+  "webDir": "dist",
+  "server": {
+    "androidScheme": "https"
+  },
+  "backgroundColor": "#0f1116"
+}
