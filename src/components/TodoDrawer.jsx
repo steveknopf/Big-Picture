@@ -68,6 +68,9 @@ export default function TodoDrawer() {
               }}
               placeholder="New list name"
             />
+            <button type="submit" className="new-list-confirm" aria-label="Create list">
+              ✓
+            </button>
           </form>
         ) : (
           <button type="button" className="list-tab add-list" onClick={() => setAddingList(true)}>
