@@ -7,6 +7,7 @@ import ScheduledChip from './ScheduledChip.jsx'
 import { getZodiacSign, getSunTimes, formatSunTime, getMoonInfo } from '../utils/astro.js'
 import { useLocation } from '../hooks/useLocation.js'
 import MoonIcon from './MoonIcon.jsx'
+import SunIcon from './SunIcon.jsx'
 
 // 6am - 11pm covers a normal waking day without an endless scroll.
 const HOURS = Array.from({ length: 18 }, (_, i) => i + 6)
@@ -69,9 +70,7 @@ export default function WeekView({ skyOverlay, moonOverlay }) {
             const sunTimes = coords ? getSunTimes(day, coords.lat, coords.lon) : null
             return (
               <div key={iso} className="week-sky-cell">
-                <span className="sky-zodiac-symbol" title={zodiac.name}>
-                  {zodiac.symbol}
-                </span>
+                <SunIcon zodiacSymbol={zodiac.symbol} zodiacName={zodiac.name} size={22} />
                 {sunTimes ? (
                   <>
                     <span className="sky-sunrise">{formatSunTime(sunTimes.sunrise)}</span>

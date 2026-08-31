@@ -48,7 +48,7 @@ export default function App() {
       case 'week':
         return <WeekView skyOverlay={skyOverlay} moonOverlay={moonOverlay} />
       case 'day':
-        return <DayView skyOverlay={skyOverlay} />
+        return <DayView skyOverlay={skyOverlay} moonOverlay={moonOverlay} />
       case 'month':
       default:
         return <MonthView skyOverlay={skyOverlay} moonOverlay={moonOverlay} />

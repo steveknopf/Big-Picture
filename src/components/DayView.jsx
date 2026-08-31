@@ -4,8 +4,10 @@ import { useAppState } from '../context/AppContext.jsx'
 import DroppableSlot from './DroppableSlot.jsx'
 import TimedBlock from './TimedBlock.jsx'
 import ScheduledChip from './ScheduledChip.jsx'
-import { getZodiacSign, getSunTimes, formatSunTime } from '../utils/astro.js'
+import { getZodiacSign, getSunTimes, formatSunTime, getMoonInfo } from '../utils/astro.js'
 import { useLocation } from '../hooks/useLocation.js'
+import SunIcon from './SunIcon.jsx'
+import MoonIcon from './MoonIcon.jsx'
 
 const HOURS = Array.from({ length: 18 }, (_, i) => i + 6)
 
@@ -16,7 +18,7 @@ function hourLabel(hour) {
   return format(new Date(2000, 0, 1, hour), 'h a')
 }
 
-export default function DayView({ skyOverlay }) {
+export default function DayView({ skyOverlay, moonOverlay }) {
   const state = useAppState()
   const anchor = fromISODate(state.view.anchorDate)
   const iso = toISODate(anchor)
@@ -33,13 +35,15 @@ export default function DayView({ skyOverlay }) {
 
   const zodiac = getZodiacSign(anchor)
   const sunTimes = coords ? getSunTimes(anchor, coords.lat, coords.lon) : null
+  const moon = getMoonInfo(anchor, coords?.lat, coords?.lon)
 
   return (
     <div className="day-view">
       {skyOverlay && (
         <div className="sky-bar">
           <span className="sky-zodiac">
-            {zodiac.symbol} {zodiac.name}
+            <SunIcon zodiacSymbol={zodiac.symbol} zodiacName={zodiac.name} size={22} />
+            {zodiac.name}
           </span>
           {sunTimes ? (
             <span className="sky-times">
@@ -48,6 +52,24 @@ export default function DayView({ skyOverlay }) {
           ) : (
             <button type="button" className="sky-enable" onClick={requestLocation}>
               Enable location for sunrise/sunset{error ? ` (${error})` : ''}
+            </button>
+          )}
+        </div>
+      )}
+
+      {moonOverlay && (
+        <div className="sky-bar">
+          <span className="sky-zodiac">
+            <MoonIcon phase={moon.phase} zodiacSymbol={moon.zodiac.symbol} zodiacName={moon.zodiac.name} size={22} />
+            {moon.zodiac.name}
+          </span>
+          {coords ? (
+            <span className="sky-times">
+              Moonrise {formatSunTime(moon.rise)} · Moonset {formatSunTime(moon.set)}
+            </span>
+          ) : (
+            <button type="button" className="sky-enable" onClick={requestLocation}>
+              Enable location for moonrise/moonset{error ? ` (${error})` : ''}
             </button>
           )}
         </div>

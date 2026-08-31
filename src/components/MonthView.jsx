@@ -5,6 +5,7 @@ import DroppableSlot from './DroppableSlot.jsx'
 import ScheduledChip from './ScheduledChip.jsx'
 import { getZodiacSign, getMoonInfo } from '../utils/astro.js'
 import MoonIcon from './MoonIcon.jsx'
+import SunIcon from './SunIcon.jsx'
 
 const WEEKDAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
 
@@ -54,29 +55,35 @@ export default function MonthView({ skyOverlay, moonOverlay }) {
                 .filter(Boolean)
                 .join(' ')}
             >
+              {(skyOverlay || moonOverlay) &&
+                (() => {
+                  const both = skyOverlay && moonOverlay
+                  const sun = skyOverlay ? getZodiacSign(day) : null
+                  const moon = moonOverlay ? getMoonInfo(day) : null
+                  return (
+                    <div className="month-cell-astro">
+                      {sun && (
+                        <div className={`month-astro-sun ${both ? 'split' : ''}`}>
+                          <SunIcon zodiacSymbol={sun.symbol} zodiacName={sun.name} fill />
+                        </div>
+                      )}
+                      {moon && (
+                        <div className={`month-astro-moon ${both ? 'split' : ''}`}>
+                          <MoonIcon
+                            phase={moon.phase}
+                            zodiacSymbol={moon.zodiac.symbol}
+                            zodiacName={moon.zodiac.name}
+                            fill
+                          />
+                        </div>
+                      )}
+                    </div>
+                  )
+                })()}
               <div className="month-cell-header">
                 <button type="button" className="day-number" onClick={() => goToWeek(day)}>
                   {format(day, 'd')}
                 </button>
-                <div className="month-cell-badges">
-                  {moonOverlay &&
-                    (() => {
-                      const moon = getMoonInfo(day)
-                      return (
-                        <MoonIcon
-                          phase={moon.phase}
-                          zodiacSymbol={moon.zodiac.symbol}
-                          zodiacName={moon.zodiac.name}
-                          size={14}
-                        />
-                      )
-                    })()}
-                  {skyOverlay && (
-                    <span className="zodiac-badge" title={getZodiacSign(day).name}>
-                      {getZodiacSign(day).symbol}
-                    </span>
-                  )}
-                </div>
               </div>
               <div className="day-todos">
                 {visible.map((t) => (
