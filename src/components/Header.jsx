@@ -5,7 +5,7 @@ import { fromISODate, toISODate } from '../utils/dateUtils.js'
 
 const LEVELS = ['year', 'month', 'week', 'day']
 
-export default function Header({ drawerOpen, onToggleDrawer }) {
+export default function Header({ drawerOpen, onToggleDrawer, skyOverlay, onToggleSky }) {
   const state = useAppState()
   const dispatch = useAppDispatch()
   const { level, anchorDate } = state.view
@@ -95,6 +95,14 @@ export default function Header({ drawerOpen, onToggleDrawer }) {
         <div className="header-actions">
           <button type="button" className="text-btn" onClick={() => navigate('today')}>
             Today
+          </button>
+          <button
+            type="button"
+            className={`text-btn sky-toggle ${skyOverlay ? 'active' : ''}`}
+            onClick={onToggleSky}
+            aria-label="Toggle sunrise, sunset, and zodiac overlay"
+          >
+            Sky {skyOverlay ? '☀' : '☾'}
           </button>
           <button
             type="button"

@@ -18,9 +18,11 @@ Open the URL it prints (usually http://localhost:5173).
 
 - **Zoom** with the `−` / `+` buttons in the header, or tap year / month / week / day directly.
 - **Drill in** by tapping things: a month in year view opens that month, a date number opens that week, a day header opens that day.
-- **Schedule** by dragging a to-do from the drawer onto a day cell (month view) or an hour slot (week/day view).
-- **Unschedule** by dragging a scheduled item back onto the drawer.
-- **Add a list** with the `+ List` button in the drawer. Each new list gets its own color, which is what colors the chips on the calendar.
+- **Schedule** by dragging a to-do from the drawer onto a day cell (month view) or an hour slot (week/day view). Scheduled items stay visible in the drawer, tagged with their date/time.
+- **Move or resize** a scheduled item by dragging it directly on the calendar to a new day/time, or dragging the handle on the bottom edge of a timed block to change its duration.
+- **Unschedule** with the small × next to an item's date/time, either in the drawer or on the calendar.
+- **Add a list** with the `+ List` button in the drawer, then tap the ✓ to create it. Tap a list's color dot to recolor it.
+- **Toggle "Sky"** in the header to overlay each day's zodiac sign, plus sunrise/sunset times once you grant location access.
 
 Everything saves to your browser's localStorage automatically. No account, no server.
 
@@ -56,4 +58,4 @@ src/
 
 ## Not built yet
 
-Recurring items, notifications, editing a to-do's text after creation, and dragging an already-scheduled item between slots (right now you drag it back to the drawer first).
+Recurring items, notifications, and editing a to-do's text after creation.

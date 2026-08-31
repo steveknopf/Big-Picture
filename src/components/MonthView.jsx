@@ -3,10 +3,11 @@ import { getMonthGrid, isSameDay, isSameMonth, toISODate, format, fromISODate } 
 import { useAppState, useAppDispatch } from '../context/AppContext.jsx'
 import DroppableSlot from './DroppableSlot.jsx'
 import ScheduledChip from './ScheduledChip.jsx'
+import { getZodiacSign } from '../utils/astro.js'
 
 const WEEKDAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
 
-export default function MonthView() {
+export default function MonthView({ skyOverlay }) {
   const state = useAppState()
   const dispatch = useAppDispatch()
   const anchor = fromISODate(state.view.anchorDate)
@@ -52,9 +53,16 @@ export default function MonthView() {
                 .filter(Boolean)
                 .join(' ')}
             >
-              <button type="button" className="day-number" onClick={() => goToWeek(day)}>
-                {format(day, 'd')}
-              </button>
+              <div className="month-cell-header">
+                <button type="button" className="day-number" onClick={() => goToWeek(day)}>
+                  {format(day, 'd')}
+                </button>
+                {skyOverlay && (
+                  <span className="zodiac-badge" title={getZodiacSign(day).name}>
+                    {getZodiacSign(day).symbol}
+                  </span>
+                )}
+              </div>
               <div className="day-todos">
                 {visible.map((t) => (
                   <ScheduledChip key={t.id} todo={t} color={listColor[t.listId]} />

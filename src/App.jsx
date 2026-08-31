@@ -12,6 +12,7 @@ export default function App() {
   const state = useAppState()
   const dispatch = useAppDispatch()
   const [drawerOpen, setDrawerOpen] = useState(true)
+  const [skyOverlay, setSkyOverlay] = useState(false)
 
   // Small movement threshold before a drag "starts" so taps (checking a box,
   // opening the drawer) don't get eaten by the drag gesture. Touch gets a
@@ -44,19 +45,24 @@ export default function App() {
       case 'year':
         return <YearView />
       case 'week':
-        return <WeekView />
+        return <WeekView skyOverlay={skyOverlay} />
       case 'day':
-        return <DayView />
+        return <DayView skyOverlay={skyOverlay} />
       case 'month':
       default:
-        return <MonthView />
+        return <MonthView skyOverlay={skyOverlay} />
     }
   }
 
   return (
     <DndContext sensors={sensors} onDragEnd={handleDragEnd}>
       <div className="app">
-        <Header drawerOpen={drawerOpen} onToggleDrawer={() => setDrawerOpen((v) => !v)} />
+        <Header
+          drawerOpen={drawerOpen}
+          onToggleDrawer={() => setDrawerOpen((v) => !v)}
+          skyOverlay={skyOverlay}
+          onToggleSky={() => setSkyOverlay((v) => !v)}
+        />
         <div className="app-body">
           <main className="calendar-view">{renderView()}</main>
           {drawerOpen && <TodoDrawer />}

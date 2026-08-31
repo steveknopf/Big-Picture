@@ -4,6 +4,8 @@ import { useAppState, useAppDispatch } from '../context/AppContext.jsx'
 import DroppableSlot from './DroppableSlot.jsx'
 import TimedBlock from './TimedBlock.jsx'
 import ScheduledChip from './ScheduledChip.jsx'
+import { getZodiacSign, getSunTimes, formatSunTime } from '../utils/astro.js'
+import { useLocation } from '../hooks/useLocation.js'
 
 // 6am - 11pm covers a normal waking day without an endless scroll.
 const HOURS = Array.from({ length: 18 }, (_, i) => i + 6)
@@ -16,13 +18,14 @@ function hourLabel(hour) {
   return format(new Date(2000, 0, 1, hour), 'h a')
 }
 
-export default function WeekView() {
+export default function WeekView({ skyOverlay }) {
   const state = useAppState()
   const dispatch = useAppDispatch()
   const anchor = fromISODate(state.view.anchorDate)
   const days = getWeekDays(anchor)
   const today = new Date()
   const listColor = Object.fromEntries(state.todoLists.map((l) => [l.id, l.color]))
+  const { coords } = useLocation()
 
   function goToDay(day) {
     dispatch({ type: 'SET_VIEW', view: { level: 'day', anchorDate: toISODate(day) } })
@@ -51,6 +54,17 @@ export default function WeekView() {
             >
               <div className="week-day-name">{format(day, 'EEE')}</div>
               <div className="week-day-num">{format(day, 'd')}</div>
+              {skyOverlay && (
+                <div className="week-day-sky">
+                  <span title={getZodiacSign(day).name}>{getZodiacSign(day).symbol}</span>
+                  {coords && (
+                    <span className="sky-times">
+                      {formatSunTime(getSunTimes(day, coords.lat, coords.lon).sunrise)} –{' '}
+                      {formatSunTime(getSunTimes(day, coords.lat, coords.lon).sunset)}
+                    </span>
+                  )}
+                </div>
+              )}
             </button>
           )
         })}
