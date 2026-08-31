@@ -648,14 +648,31 @@ button {
 .month-astro-moon {
   position: absolute;
   inset: 0;
+  overflow: hidden;
 }
 
+.month-astro-inner {
+  position: absolute;
+  inset: 0;
+}
+
+/* The clip boundary stays fixed at the true diagonal so the two halves
+   keep tiling exactly; the icon inside is shifted toward its triangle's
+   centroid so it reads as centered rather than hugging the seam. */
 .month-astro-sun.split {
   clip-path: polygon(0% 0%, 100% 0%, 100% 100%);
 }
 
+.month-astro-sun.split .month-astro-inner {
+  transform: translate(16.67%, -16.67%);
+}
+
 .month-astro-moon.split {
   clip-path: polygon(0% 0%, 0% 100%, 100% 100%);
+}
+
+.month-astro-moon.split .month-astro-inner {
+  transform: translate(-16.67%, 16.67%);
 }
 
 /* ---------------------------------------------------------------

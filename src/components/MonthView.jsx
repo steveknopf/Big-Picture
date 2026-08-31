@@ -64,17 +64,21 @@ export default function MonthView({ skyOverlay, moonOverlay }) {
                     <div className="month-cell-astro">
                       {sun && (
                         <div className={`month-astro-sun ${both ? 'split' : ''}`}>
-                          <SunIcon zodiacSymbol={sun.symbol} zodiacName={sun.name} fill />
+                          <div className="month-astro-inner">
+                            <SunIcon zodiacSymbol={sun.symbol} zodiacName={sun.name} fill />
+                          </div>
                         </div>
                       )}
                       {moon && (
                         <div className={`month-astro-moon ${both ? 'split' : ''}`}>
-                          <MoonIcon
-                            phase={moon.phase}
-                            zodiacSymbol={moon.zodiac.symbol}
-                            zodiacName={moon.zodiac.name}
-                            fill
-                          />
+                          <div className="month-astro-inner">
+                            <MoonIcon
+                              phase={moon.phase}
+                              zodiacSymbol={moon.zodiac.symbol}
+                              zodiacName={moon.zodiac.name}
+                              fill
+                            />
+                          </div>
                         </div>
                       )}
                     </div>
