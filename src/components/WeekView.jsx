@@ -61,7 +61,7 @@ export default function WeekView({ skyOverlay }) {
 
       {skyOverlay && (
         <div className="week-sky-row">
-          <div className="time-gutter small-label">sky</div>
+          <div className="time-gutter small-label">sun</div>
           {days.map((day) => {
             const iso = toISODate(day)
             const zodiac = getZodiacSign(day)
