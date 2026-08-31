@@ -4,8 +4,9 @@ import { useAppState, useAppDispatch } from '../context/AppContext.jsx'
 import DroppableSlot from './DroppableSlot.jsx'
 import TimedBlock from './TimedBlock.jsx'
 import ScheduledChip from './ScheduledChip.jsx'
-import { getZodiacSign, getSunTimes, formatSunTime } from '../utils/astro.js'
+import { getZodiacSign, getSunTimes, formatSunTime, getMoonInfo } from '../utils/astro.js'
 import { useLocation } from '../hooks/useLocation.js'
+import MoonIcon from './MoonIcon.jsx'
 
 // 6am - 11pm covers a normal waking day without an endless scroll.
 const HOURS = Array.from({ length: 18 }, (_, i) => i + 6)
@@ -18,7 +19,7 @@ function hourLabel(hour) {
   return format(new Date(2000, 0, 1, hour), 'h a')
 }
 
-export default function WeekView({ skyOverlay }) {
+export default function WeekView({ skyOverlay, moonOverlay }) {
   const state = useAppState()
   const dispatch = useAppDispatch()
   const anchor = fromISODate(state.view.anchorDate)
@@ -75,6 +76,29 @@ export default function WeekView({ skyOverlay }) {
                   <>
                     <span className="sky-sunrise">{formatSunTime(sunTimes.sunrise)}</span>
                     <span className="sky-sunset">{formatSunTime(sunTimes.sunset)}</span>
+                  </>
+                ) : (
+                  <span className="sky-sunrise">—</span>
+                )}
+              </div>
+            )
+          })}
+        </div>
+      )}
+
+      {moonOverlay && (
+        <div className="week-moon-row">
+          <div className="time-gutter small-label">moon</div>
+          {days.map((day) => {
+            const iso = toISODate(day)
+            const moon = getMoonInfo(day, coords?.lat, coords?.lon)
+            return (
+              <div key={iso} className="week-moon-cell">
+                <MoonIcon phase={moon.phase} zodiacSymbol={moon.zodiac.symbol} zodiacName={moon.zodiac.name} size={22} />
+                {coords ? (
+                  <>
+                    <span className="sky-sunrise">{formatSunTime(moon.rise)}</span>
+                    <span className="sky-sunset">{formatSunTime(moon.set)}</span>
                   </>
                 ) : (
                   <span className="sky-sunrise">—</span>

@@ -3,11 +3,12 @@ import { getMonthGrid, isSameDay, isSameMonth, toISODate, format, fromISODate } 
 import { useAppState, useAppDispatch } from '../context/AppContext.jsx'
 import DroppableSlot from './DroppableSlot.jsx'
 import ScheduledChip from './ScheduledChip.jsx'
-import { getZodiacSign } from '../utils/astro.js'
+import { getZodiacSign, getMoonInfo } from '../utils/astro.js'
+import MoonIcon from './MoonIcon.jsx'
 
 const WEEKDAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
 
-export default function MonthView({ skyOverlay }) {
+export default function MonthView({ skyOverlay, moonOverlay }) {
   const state = useAppState()
   const dispatch = useAppDispatch()
   const anchor = fromISODate(state.view.anchorDate)
@@ -57,11 +58,25 @@ export default function MonthView({ skyOverlay }) {
                 <button type="button" className="day-number" onClick={() => goToWeek(day)}>
                   {format(day, 'd')}
                 </button>
-                {skyOverlay && (
-                  <span className="zodiac-badge" title={getZodiacSign(day).name}>
-                    {getZodiacSign(day).symbol}
-                  </span>
-                )}
+                <div className="month-cell-badges">
+                  {moonOverlay &&
+                    (() => {
+                      const moon = getMoonInfo(day)
+                      return (
+                        <MoonIcon
+                          phase={moon.phase}
+                          zodiacSymbol={moon.zodiac.symbol}
+                          zodiacName={moon.zodiac.name}
+                          size={14}
+                        />
+                      )
+                    })()}
+                  {skyOverlay && (
+                    <span className="zodiac-badge" title={getZodiacSign(day).name}>
+                      {getZodiacSign(day).symbol}
+                    </span>
+                  )}
+                </div>
               </div>
               <div className="day-todos">
                 {visible.map((t) => (

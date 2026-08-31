@@ -5,7 +5,14 @@ import { fromISODate, toISODate } from '../utils/dateUtils.js'
 
 const LEVELS = ['year', 'month', 'week', 'day']
 
-export default function Header({ drawerOpen, onToggleDrawer, skyOverlay, onToggleSky }) {
+export default function Header({
+  drawerOpen,
+  onToggleDrawer,
+  skyOverlay,
+  onToggleSky,
+  moonOverlay,
+  onToggleMoon,
+}) {
   const state = useAppState()
   const dispatch = useAppDispatch()
   const { level, anchorDate } = state.view
@@ -103,6 +110,14 @@ export default function Header({ drawerOpen, onToggleDrawer, skyOverlay, onToggl
             aria-label="Toggle sunrise, sunset, and zodiac overlay"
           >
             Sky {skyOverlay ? '☀' : '☾'}
+          </button>
+          <button
+            type="button"
+            className={`text-btn moon-toggle ${moonOverlay ? 'active' : ''}`}
+            onClick={onToggleMoon}
+            aria-label="Toggle moon phase, zodiac, and rise/set overlay"
+          >
+            Moon 🌙
           </button>
           <button
             type="button"
