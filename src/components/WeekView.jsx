@@ -54,21 +54,36 @@ export default function WeekView({ skyOverlay }) {
             >
               <div className="week-day-name">{format(day, 'EEE')}</div>
               <div className="week-day-num">{format(day, 'd')}</div>
-              {skyOverlay && (
-                <div className="week-day-sky">
-                  <span title={getZodiacSign(day).name}>{getZodiacSign(day).symbol}</span>
-                  {coords && (
-                    <span className="sky-times">
-                      {formatSunTime(getSunTimes(day, coords.lat, coords.lon).sunrise)} –{' '}
-                      {formatSunTime(getSunTimes(day, coords.lat, coords.lon).sunset)}
-                    </span>
-                  )}
-                </div>
-              )}
             </button>
           )
         })}
       </div>
+
+      {skyOverlay && (
+        <div className="week-sky-row">
+          <div className="time-gutter small-label">sky</div>
+          {days.map((day) => {
+            const iso = toISODate(day)
+            const zodiac = getZodiacSign(day)
+            const sunTimes = coords ? getSunTimes(day, coords.lat, coords.lon) : null
+            return (
+              <div key={iso} className="week-sky-cell">
+                <span className="sky-zodiac-symbol" title={zodiac.name}>
+                  {zodiac.symbol}
+                </span>
+                {sunTimes ? (
+                  <>
+                    <span className="sky-sunrise">{formatSunTime(sunTimes.sunrise)}</span>
+                    <span className="sky-sunset">{formatSunTime(sunTimes.sunset)}</span>
+                  </>
+                ) : (
+                  <span className="sky-sunrise">—</span>
+                )}
+              </div>
+            )
+          })}
+        </div>
+      )}
 
       <div className="week-allday-row">
         <div className="time-gutter small-label">all day</div>
