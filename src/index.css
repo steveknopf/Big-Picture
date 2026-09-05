@@ -181,10 +181,12 @@ button {
 .todo-drawer {
   flex-shrink: 0;
   width: 300px;
+  min-height: 0;
   background: var(--surface);
   border-left: 1px solid var(--border);
   padding: 10px 12px 12px;
-  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
   transition: background 0.15s ease;
 }
 
@@ -207,6 +209,7 @@ button {
 }
 
 .list-tabs {
+  flex-shrink: 0;
   display: flex;
   gap: 6px;
   overflow-x: auto;
@@ -304,6 +307,7 @@ button {
 }
 
 .new-todo-form {
+  flex-shrink: 0;
   display: flex;
   gap: 6px;
   margin-bottom: 10px;
@@ -340,6 +344,9 @@ button {
 }
 
 .todo-items {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
   display: flex;
   flex-direction: column;
   gap: 6px;
