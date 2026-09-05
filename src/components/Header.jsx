@@ -3,6 +3,7 @@ import { format, startOfWeek, endOfWeek } from 'date-fns'
 import { useAppState, useAppDispatch } from '../context/AppContext.jsx'
 import { fromISODate, toISODate } from '../utils/dateUtils.js'
 import DatePickerPopup from './DatePickerPopup.jsx'
+import BackupPopup from './BackupPopup.jsx'
 
 const LEVELS = ['year', 'month', 'week', 'day']
 
@@ -19,6 +20,7 @@ export default function Header({
   const { level, anchorDate } = state.view
   const anchor = fromISODate(anchorDate)
   const [datePickerOpen, setDatePickerOpen] = useState(false)
+  const [backupOpen, setBackupOpen] = useState(false)
 
   function jumpToDate(iso) {
     dispatch({ type: 'SET_VIEW', view: { anchorDate: iso } })
@@ -158,12 +160,22 @@ export default function Header({
           >
             {drawerOpen ? 'Hide to-dos ▲' : 'To-dos ▼'}
           </button>
+          <button
+            type="button"
+            className="text-btn"
+            onClick={() => setBackupOpen(true)}
+            aria-label="Backup or restore your data"
+            title="Backup or restore your data"
+          >
+            Backup
+          </button>
         </div>
       </div>
 
       {datePickerOpen && (
         <DatePickerPopup anchor={anchor} onPick={jumpToDate} onClose={() => setDatePickerOpen(false)} />
       )}
+      {backupOpen && <BackupPopup onClose={() => setBackupOpen(false)} />}
     </header>
   )
 }

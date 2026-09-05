@@ -187,6 +187,17 @@ function reducer(state, action) {
     case '__RESTORE__':
       return { ...state, ...action.payload }
 
+    // Replaces everything with an imported backup (see BackupPopup). Keeping
+    // the current view means you land back where you were, not wherever the
+    // backup's view happened to be pointed.
+    case 'RESTORE_BACKUP':
+      return {
+        ...state,
+        todoLists: action.payload.todoLists,
+        todos: action.payload.todos,
+        activeListId: action.payload.activeListId,
+      }
+
     default:
       return state
   }
@@ -206,6 +217,7 @@ const UNDOABLE_ACTIONS = new Set([
   'SCHEDULE_TODO_TO_DATES',
   'UNSCHEDULE_TODO',
   'UNSCHEDULE_DATE',
+  'RESTORE_BACKUP',
 ])
 
 const HISTORY_LIMIT = 20
