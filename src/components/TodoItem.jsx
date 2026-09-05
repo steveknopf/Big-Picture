@@ -16,7 +16,7 @@ function scheduleLabel(todo) {
   return `${dateLabel} · ${hourLabel(startHour)} – ${hourLabel(startHour + duration)}`
 }
 
-export default function TodoItem({ todo, color, onToggle, onDelete, onUnschedule }) {
+export default function TodoItem({ todo, color, onToggle, onDelete, onUnschedule, onOpenSchedule }) {
   const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({
     id: `todo:${todo.id}`,
     data: { todoId: todo.id },
@@ -43,7 +43,7 @@ export default function TodoItem({ todo, color, onToggle, onDelete, onUnschedule
         onPointerDown={(e) => e.stopPropagation()}
         aria-label={`Mark "${todo.text}" complete`}
       />
-      <div className="todo-main">
+      <div className="todo-main" onClick={() => onOpenSchedule(todo.id)}>
         <span className="todo-text">{todo.text}</span>
         {schedule && (
           <span className="todo-schedule">
@@ -52,7 +52,10 @@ export default function TodoItem({ todo, color, onToggle, onDelete, onUnschedule
               type="button"
               className="todo-unschedule"
               onPointerDown={(e) => e.stopPropagation()}
-              onClick={() => onUnschedule(todo.id)}
+              onClick={(e) => {
+                e.stopPropagation()
+                onUnschedule(todo.id)
+              }}
               aria-label={`Remove "${todo.text}" from the calendar`}
               title="Remove from calendar"
             >

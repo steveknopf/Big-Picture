@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import { useDroppable } from '@dnd-kit/core'
 import { useAppState, useAppDispatch } from '../context/AppContext.jsx'
 import TodoItem from './TodoItem.jsx'
+import SchedulePopup from './SchedulePopup.jsx'
 
 export default function TodoDrawer() {
   const state = useAppState()
@@ -9,6 +10,8 @@ export default function TodoDrawer() {
   const [addingList, setAddingList] = useState(false)
   const [newListName, setNewListName] = useState('')
   const [newTodoText, setNewTodoText] = useState('')
+  const [scheduleTodoId, setScheduleTodoId] = useState(null)
+  const scheduleTodo = state.todos.find((t) => t.id === scheduleTodoId)
 
   // Dropping a scheduled todo back onto the drawer clears its date/time.
   const { setNodeRef, isOver } = useDroppable({ id: 'unschedule' })
@@ -103,10 +106,13 @@ export default function TodoDrawer() {
               onToggle={(id) => dispatch({ type: 'TOGGLE_TODO', id })}
               onDelete={(id) => dispatch({ type: 'DELETE_TODO', id })}
               onUnschedule={(id) => dispatch({ type: 'UNSCHEDULE_TODO', id })}
+              onOpenSchedule={(id) => setScheduleTodoId(id)}
             />
           ))
         )}
       </div>
+
+      {scheduleTodo && <SchedulePopup todo={scheduleTodo} onClose={() => setScheduleTodoId(null)} />}
     </div>
   )
 }

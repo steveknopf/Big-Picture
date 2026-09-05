@@ -123,6 +123,21 @@ function reducer(state, action) {
         ),
       }
 
+    case 'CLONE_TODO_TO_DATE': {
+      const source = state.todos.find((t) => t.id === action.sourceId)
+      if (!source) return state
+      const clone = {
+        id: uid(),
+        listId: source.listId,
+        text: source.text,
+        completed: false,
+        date: action.date,
+        time: action.time ?? null,
+        duration: action.time ? action.duration || 1 : null,
+      }
+      return { ...state, todos: [...state.todos, clone] }
+    }
+
     case 'UNSCHEDULE_TODO':
       return {
         ...state,
