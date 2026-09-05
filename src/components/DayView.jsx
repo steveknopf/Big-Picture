@@ -104,9 +104,20 @@ export default function DayView({ skyOverlay, moonOverlay }) {
           <div className="day-hour-row" key={hour}>
             <div className="time-label">{hourLabel(hour)}</div>
             <DroppableSlot id={`slot:${iso}:${hour}`} className="day-hour-cell">
-              {todosFor(hour).map((t) => (
-                <TimedBlock key={t.id} todo={t} color={listColor[t.listId]} rowHeight={ROW_HEIGHT} gap={3} />
-              ))}
+              {(() => {
+                const cellTodos = todosFor(hour)
+                return cellTodos.map((t, i) => (
+                  <TimedBlock
+                    key={t.id}
+                    todo={t}
+                    color={listColor[t.listId]}
+                    rowHeight={ROW_HEIGHT}
+                    gap={3}
+                    index={i}
+                    count={cellTodos.length}
+                  />
+                ))
+              })()}
             </DroppableSlot>
           </div>
         ))}

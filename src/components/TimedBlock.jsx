@@ -3,7 +3,7 @@ import { useDraggable } from '@dnd-kit/core'
 import { useAppDispatch } from '../context/AppContext.jsx'
 import { useResizableDuration } from '../hooks/useResizableDuration.js'
 
-export default function TimedBlock({ todo, color, rowHeight, small, gap }) {
+export default function TimedBlock({ todo, color, rowHeight, small, gap, index = 0, count = 1 }) {
   const dispatch = useAppDispatch()
   const { displayDuration, onResizeStart } = useResizableDuration(todo, rowHeight, dispatch)
 
@@ -14,6 +14,14 @@ export default function TimedBlock({ todo, color, rowHeight, small, gap }) {
     data: { todoId: todo.id },
   })
 
+  // More than one todo landed on the same hour — split them into side-by-side
+  // columns instead of letting them stack exactly on top of each other, which
+  // hid every one but the last (still visible in Month view's list, though).
+  const overlapStyle =
+    count > 1
+      ? { left: `calc(${(index / count) * 100}% + 1px)`, right: 'auto', width: `calc(${100 / count}% - 2px)` }
+      : null
+
   return (
     <div
       ref={setNodeRef}
@@ -22,6 +30,7 @@ export default function TimedBlock({ todo, color, rowHeight, small, gap }) {
         background: color,
         height: `${displayDuration * rowHeight - gap}px`,
         transform: transform ? `translate3d(${transform.x}px, ${transform.y}px, 0)` : undefined,
+        ...overlapStyle,
       }}
       {...listeners}
       {...attributes}

@@ -130,16 +130,21 @@ export default function WeekView({ skyOverlay, moonOverlay }) {
               const iso = toISODate(day)
               return (
                 <DroppableSlot key={iso} id={`slot:${iso}:${hour}`} className="week-hour-cell">
-                  {todosFor(iso, hour).map((t) => (
-                    <TimedBlock
-                      key={t.id}
-                      todo={t}
-                      color={listColor[t.listId]}
-                      rowHeight={ROW_HEIGHT}
-                      gap={2}
-                      small
-                    />
-                  ))}
+                  {(() => {
+                    const cellTodos = todosFor(iso, hour)
+                    return cellTodos.map((t, i) => (
+                      <TimedBlock
+                        key={t.id}
+                        todo={t}
+                        color={listColor[t.listId]}
+                        rowHeight={ROW_HEIGHT}
+                        gap={2}
+                        small
+                        index={i}
+                        count={cellTodos.length}
+                      />
+                    ))
+                  })()}
                 </DroppableSlot>
               )
             })}
