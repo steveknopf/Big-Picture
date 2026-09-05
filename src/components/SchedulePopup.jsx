@@ -20,7 +20,8 @@ export default function SchedulePopup({ todo, onClose }) {
   const dispatch = useAppDispatch()
   const [step, setStep] = useState('frequency') // 'frequency' | 'time' | 'custom'
   const [frequency, setFrequency] = useState(null)
-  const [hour, setHour] = useState(9)
+  const [hour, setHour] = useState(9) // weekly/monthly: one time for every occurrence
+  const [perDayHours, setPerDayHours] = useState(() => Array(7).fill(9)) // daily: Sun..Sat
   const [customAnchor, setCustomAnchor] = useState(new Date())
   const [selectedDates, setSelectedDates] = useState(() => new Set())
 
@@ -33,25 +34,51 @@ export default function SchedulePopup({ todo, onClose }) {
     }
   }
 
-  function applyDates(dates, time) {
+  function setPerDayHour(dayIndex, value) {
+    setPerDayHours((prev) => prev.map((h, i) => (i === dayIndex ? value : h)))
+  }
+
+  // dates and times are parallel arrays — each date gets whatever time sits
+  // at the same index (or no time, for an all-day custom assignment).
+  function applyDates(dates, times) {
     if (dates.length === 0) return
-    dispatch({ type: 'SCHEDULE_TODO', id: todo.id, date: dates[0], time, duration: time ? 1 : null })
+    dispatch({
+      type: 'SCHEDULE_TODO',
+      id: todo.id,
+      date: dates[0],
+      time: times[0],
+      duration: times[0] ? 1 : null,
+    })
     for (let i = 1; i < dates.length; i++) {
-      dispatch({ type: 'CLONE_TODO_TO_DATE', sourceId: todo.id, date: dates[i], time, duration: time ? 1 : null })
+      dispatch({
+        type: 'CLONE_TODO_TO_DATE',
+        sourceId: todo.id,
+        date: dates[i],
+        time: times[i],
+        duration: times[i] ? 1 : null,
+      })
     }
   }
 
   function confirmRepeating() {
     const count = OCCURRENCE_COUNT[frequency]
     const dates = []
+    const times = []
     let d = new Date()
     for (let i = 0; i < count; i++) {
       dates.push(toISODate(d))
-      if (frequency === 'daily') d = addDays(d, 1)
-      else if (frequency === 'weekly') d = addWeeks(d, 1)
-      else if (frequency === 'monthly') d = addMonths(d, 1)
+      if (frequency === 'daily') {
+        times.push(String(perDayHours[d.getDay()]))
+        d = addDays(d, 1)
+      } else if (frequency === 'weekly') {
+        times.push(String(hour))
+        d = addWeeks(d, 1)
+      } else if (frequency === 'monthly') {
+        times.push(String(hour))
+        d = addMonths(d, 1)
+      }
     }
-    applyDates(dates, String(hour))
+    applyDates(dates, times)
     onClose()
   }
 
@@ -65,7 +92,8 @@ export default function SchedulePopup({ todo, onClose }) {
   }
 
   function confirmCustom() {
-    applyDates([...selectedDates].sort(), null)
+    const dates = [...selectedDates].sort()
+    applyDates(dates, dates.map(() => null))
     onClose()
   }
 
@@ -98,7 +126,38 @@ export default function SchedulePopup({ todo, onClose }) {
           </div>
         )}
 
-        {step === 'time' && (
+        {step === 'time' && frequency === 'daily' && (
+          <div className="time-step">
+            <label>Time by day</label>
+            <div className="per-day-times">
+              {WEEKDAYS.map((w, i) => (
+                <div key={w} className="per-day-time-row">
+                  <span className="per-day-label">{w}</span>
+                  <select
+                    value={perDayHours[i]}
+                    onChange={(e) => setPerDayHour(i, parseInt(e.target.value, 10))}
+                  >
+                    {HOURS.map((h) => (
+                      <option key={h} value={h}>
+                        {hourLabel(h)}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              ))}
+            </div>
+            <div className="modal-actions">
+              <button type="button" className="modal-back" onClick={() => setStep('frequency')}>
+                Back
+              </button>
+              <button type="button" className="modal-confirm" onClick={confirmRepeating}>
+                Schedule
+              </button>
+            </div>
+          </div>
+        )}
+
+        {step === 'time' && frequency !== 'daily' && (
           <div className="time-step">
             <label htmlFor="repeat-time">Time</label>
             <select

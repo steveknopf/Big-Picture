@@ -1132,6 +1132,37 @@ button {
   outline: none;
 }
 
+.per-day-times {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.per-day-time-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.per-day-label {
+  width: 36px;
+  flex-shrink: 0;
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.per-day-time-row select {
+  flex: 1;
+  width: auto;
+  padding: 7px 10px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  background: var(--surface-raised);
+  color: var(--text);
+  font-size: 13px;
+  outline: none;
+}
+
 .modal-actions {
   display: flex;
   gap: 8px;
