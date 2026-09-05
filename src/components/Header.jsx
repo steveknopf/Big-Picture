@@ -21,6 +21,8 @@ export default function Header({
   const anchor = fromISODate(anchorDate)
   const [datePickerOpen, setDatePickerOpen] = useState(false)
   const [backupOpen, setBackupOpen] = useState(false)
+  const anchorIso = toISODate(anchor)
+  const hasScheduledToday = state.todos.some((t) => t.date === anchorIso)
 
   function jumpToDate(iso) {
     dispatch({ type: 'SET_VIEW', view: { anchorDate: iso } })
@@ -137,6 +139,18 @@ export default function Header({
           <button type="button" className="text-btn" onClick={() => navigate('today')}>
             Today
           </button>
+          {level === 'day' && (
+            <button
+              type="button"
+              className="text-btn clear-day-btn"
+              disabled={!hasScheduledToday}
+              onClick={() => dispatch({ type: 'UNSCHEDULE_DATE', date: anchorIso })}
+              aria-label="Clear everything scheduled on the day you're viewing"
+              title="Clear everything scheduled on the day you're viewing"
+            >
+              Clear
+            </button>
+          )}
           <button
             type="button"
             className={`text-btn sky-toggle ${skyOverlay ? 'active' : ''}`}

@@ -195,6 +195,15 @@ button {
   cursor: default;
 }
 
+.clear-day-btn {
+  border: 1px solid #fb7185;
+  color: #fb7185;
+}
+
+.clear-day-btn:disabled {
+  border-color: var(--border);
+}
+
 /* ---------------------------------------------------------------
    Todo drawer
 ------------------------------------------------------------------ */
@@ -974,11 +983,6 @@ button {
   padding: 8px 12px 24px;
 }
 
-.day-toolbar {
-  display: flex;
-  justify-content: flex-end;
-  margin-bottom: 6px;
-}
 
 .sky-bar {
   display: flex;

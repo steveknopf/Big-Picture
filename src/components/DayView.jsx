@@ -1,6 +1,6 @@
 import React from 'react'
 import { toISODate, format, fromISODate } from '../utils/dateUtils.js'
-import { useAppState, useAppDispatch } from '../context/AppContext.jsx'
+import { useAppState } from '../context/AppContext.jsx'
 import DroppableSlot from './DroppableSlot.jsx'
 import TimedBlock from './TimedBlock.jsx'
 import ScheduledChip from './ScheduledChip.jsx'
@@ -20,12 +20,10 @@ function hourLabel(hour) {
 
 export default function DayView({ skyOverlay, moonOverlay }) {
   const state = useAppState()
-  const dispatch = useAppDispatch()
   const anchor = fromISODate(state.view.anchorDate)
   const iso = toISODate(anchor)
   const listColor = Object.fromEntries(state.todoLists.map((l) => [l.id, l.color]))
   const { coords, error, requestLocation } = useLocation()
-  const hasScheduled = state.todos.some((t) => t.date === iso)
 
   function todosFor(hour) {
     return state.todos.filter((t) => {
@@ -41,19 +39,6 @@ export default function DayView({ skyOverlay, moonOverlay }) {
 
   return (
     <div className="day-view">
-      <div className="day-toolbar">
-        <button
-          type="button"
-          className="text-btn"
-          disabled={!hasScheduled}
-          onClick={() => dispatch({ type: 'UNSCHEDULE_DATE', date: iso })}
-          aria-label="Clear everything scheduled on this day"
-          title="Clear everything scheduled on this day"
-        >
-          Clear
-        </button>
-      </div>
-
       {skyOverlay && (
         <div className="sky-bar">
           <span className="sky-zodiac">
