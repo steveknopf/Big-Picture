@@ -960,6 +960,12 @@ button {
   padding: 8px 12px 24px;
 }
 
+.day-toolbar {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 6px;
+}
+
 .sky-bar {
   display: flex;
   align-items: center;

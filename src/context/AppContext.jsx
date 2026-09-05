@@ -154,6 +154,16 @@ function reducer(state, action) {
         ),
       }
 
+    // Clears every todo scheduled on one date at once (Day view's "Clear day"),
+    // so it's a single undo step instead of one per item.
+    case 'UNSCHEDULE_DATE':
+      return {
+        ...state,
+        todos: state.todos.map((t) =>
+          t.date === action.date ? { ...t, date: null, time: null, duration: null } : t
+        ),
+      }
+
     case 'SET_VIEW':
       return { ...state, view: { ...state.view, ...action.view } }
 
@@ -195,6 +205,7 @@ const UNDOABLE_ACTIONS = new Set([
   'SCHEDULE_TODO',
   'SCHEDULE_TODO_TO_DATES',
   'UNSCHEDULE_TODO',
+  'UNSCHEDULE_DATE',
 ])
 
 const HISTORY_LIMIT = 20
