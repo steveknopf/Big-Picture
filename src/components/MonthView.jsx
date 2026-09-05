@@ -16,8 +16,8 @@ export default function MonthView({ skyOverlay, moonOverlay }) {
   const days = getMonthGrid(anchor)
   const today = new Date()
 
-  function goToWeek(day) {
-    dispatch({ type: 'SET_VIEW', view: { level: 'week', anchorDate: toISODate(day) } })
+  function goToDay(day) {
+    dispatch({ type: 'SET_VIEW', view: { level: 'day', anchorDate: toISODate(day) } })
   }
 
   const todosByDate = {}
@@ -85,7 +85,7 @@ export default function MonthView({ skyOverlay, moonOverlay }) {
                   )
                 })()}
               <div className="month-cell-header">
-                <button type="button" className="day-number" onClick={() => goToWeek(day)}>
+                <button type="button" className="day-number" onClick={() => goToDay(day)}>
                   {format(day, 'd')}
                 </button>
               </div>

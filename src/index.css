@@ -114,6 +114,18 @@ button {
   text-overflow: ellipsis;
 }
 
+.header-day-number {
+  color: var(--accent-2);
+  font: inherit;
+  font-weight: 700;
+  padding: 0 2px;
+  border-radius: 4px;
+}
+
+.header-day-number:active {
+  background: var(--surface-raised);
+}
+
 .icon-btn,
 .nav-btn {
   width: 34px;

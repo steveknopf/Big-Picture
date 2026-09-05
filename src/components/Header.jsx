@@ -1,7 +1,8 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { format, startOfWeek, endOfWeek } from 'date-fns'
 import { useAppState, useAppDispatch } from '../context/AppContext.jsx'
 import { fromISODate, toISODate } from '../utils/dateUtils.js'
+import DatePickerPopup from './DatePickerPopup.jsx'
 
 const LEVELS = ['year', 'month', 'week', 'day']
 
@@ -17,6 +18,11 @@ export default function Header({
   const dispatch = useAppDispatch()
   const { level, anchorDate } = state.view
   const anchor = fromISODate(anchorDate)
+  const [datePickerOpen, setDatePickerOpen] = useState(false)
+
+  function jumpToDate(iso) {
+    dispatch({ type: 'SET_VIEW', view: { anchorDate: iso } })
+  }
 
   function setLevel(nextLevel) {
     dispatch({ type: 'SET_VIEW', view: { level: nextLevel, anchorDate: toISODate(anchor) } })
@@ -68,7 +74,23 @@ export default function Header({
           <button type="button" className="nav-btn" onClick={() => navigate('prev')} aria-label="Previous">
             ‹
           </button>
-          <h1 className="header-label">{label()}</h1>
+          {level === 'day' ? (
+            <h1 className="header-label">
+              {format(anchor, 'EEEE, MMM ')}
+              <button
+                type="button"
+                className="header-day-number"
+                onClick={() => setDatePickerOpen(true)}
+                aria-label="Jump to a different date"
+                title="Jump to a different date"
+              >
+                {format(anchor, 'd')}
+              </button>
+              {format(anchor, ', yyyy')}
+            </h1>
+          ) : (
+            <h1 className="header-label">{label()}</h1>
+          )}
           <button type="button" className="nav-btn" onClick={() => navigate('next')} aria-label="Next">
             ›
           </button>
@@ -138,6 +160,10 @@ export default function Header({
           </button>
         </div>
       </div>
+
+      {datePickerOpen && (
+        <DatePickerPopup anchor={anchor} onPick={jumpToDate} onClose={() => setDatePickerOpen(false)} />
+      )}
     </header>
   )
 }
