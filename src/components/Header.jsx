@@ -100,6 +100,16 @@ export default function Header({
           ))}
         </div>
         <div className="header-actions">
+          <button
+            type="button"
+            className="text-btn"
+            onClick={() => dispatch({ type: 'UNDO' })}
+            disabled={!state.canUndo}
+            aria-label="Undo last change"
+            title="Undo last change"
+          >
+            ↶ Undo
+          </button>
           <button type="button" className="text-btn" onClick={() => navigate('today')}>
             Today
           </button>

@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect, useReducer } from 'react'
+import React, { createContext, useContext, useEffect, useReducer, useState } from 'react'
 import { addYears, addMonths, addWeeks, addDays } from 'date-fns'
 import { toISODate, fromISODate } from '../utils/dateUtils.js'
 
@@ -123,19 +123,27 @@ function reducer(state, action) {
         ),
       }
 
-    case 'CLONE_TODO_TO_DATE': {
-      const source = state.todos.find((t) => t.id === action.sourceId)
-      if (!source) return state
-      const clone = {
+    // Fans a single todo out across many dates in one shot (used by the
+    // repeat/custom popup) so it's also one undo step, not one per date.
+    case 'SCHEDULE_TODO_TO_DATES': {
+      const source = state.todos.find((t) => t.id === action.id)
+      if (!source || action.entries.length === 0) return state
+      const [first, ...rest] = action.entries
+      const updated = state.todos.map((t) =>
+        t.id === action.id
+          ? { ...t, date: first.date, time: first.time ?? null, duration: first.time ? first.duration || 1 : null }
+          : t
+      )
+      const clones = rest.map((entry) => ({
         id: uid(),
         listId: source.listId,
         text: source.text,
         completed: false,
-        date: action.date,
-        time: action.time ?? null,
-        duration: action.time ? action.duration || 1 : null,
-      }
-      return { ...state, todos: [...state.todos, clone] }
+        date: entry.date,
+        time: entry.time ?? null,
+        duration: entry.time ? entry.duration || 1 : null,
+      }))
+      return { ...state, todos: [...updated, ...clones] }
     }
 
     case 'UNSCHEDULE_TODO':
@@ -164,9 +172,35 @@ function reducer(state, action) {
       return { ...state, view: { ...state.view, anchorDate: toISODate(next) } }
     }
 
+    // Restores a prior snapshot of the data (used by undo). View/navigation
+    // state is left alone — undo shouldn't yank you to a different screen.
+    case '__RESTORE__':
+      return { ...state, ...action.payload }
+
     default:
       return state
   }
+}
+
+// Only actions that change your data are undoable — navigating around the
+// calendar or switching the active list tab isn't a "mistake" to undo.
+const UNDOABLE_ACTIONS = new Set([
+  'ADD_LIST',
+  'RENAME_LIST',
+  'DELETE_LIST',
+  'SET_LIST_COLOR',
+  'ADD_TODO',
+  'TOGGLE_TODO',
+  'DELETE_TODO',
+  'SCHEDULE_TODO',
+  'SCHEDULE_TODO_TO_DATES',
+  'UNSCHEDULE_TODO',
+])
+
+const HISTORY_LIMIT = 20
+
+function snapshotOf(state) {
+  return { todoLists: state.todoLists, todos: state.todos, activeListId: state.activeListId }
 }
 
 const AppStateContext = createContext(null)
@@ -174,6 +208,23 @@ const AppDispatchContext = createContext(null)
 
 export function AppProvider({ children }) {
   const [state, dispatch] = useReducer(reducer, undefined, loadState)
+  // Ephemeral, session-only undo history — deliberately not part of `state`
+  // so it never gets written to localStorage or persists across a reload.
+  const [past, setPast] = useState([])
+
+  function dispatchWithHistory(action) {
+    if (action.type === 'UNDO') {
+      if (past.length === 0) return
+      const last = past[past.length - 1]
+      setPast(past.slice(0, -1))
+      dispatch({ type: '__RESTORE__', payload: last })
+      return
+    }
+    if (UNDOABLE_ACTIONS.has(action.type)) {
+      setPast([...past, snapshotOf(state)].slice(-HISTORY_LIMIT))
+    }
+    dispatch(action)
+  }
 
   useEffect(() => {
     try {
@@ -184,8 +235,8 @@ export function AppProvider({ children }) {
   }, [state])
 
   return (
-    <AppStateContext.Provider value={state}>
-      <AppDispatchContext.Provider value={dispatch}>{children}</AppDispatchContext.Provider>
+    <AppStateContext.Provider value={{ ...state, canUndo: past.length > 0 }}>
+      <AppDispatchContext.Provider value={dispatchWithHistory}>{children}</AppDispatchContext.Provider>
     </AppStateContext.Provider>
   )
 }

@@ -175,6 +175,12 @@ button {
   background: var(--surface-raised);
 }
 
+.text-btn:disabled {
+  color: var(--text-faint);
+  opacity: 0.5;
+  cursor: default;
+}
+
 /* ---------------------------------------------------------------
    Todo drawer
 ------------------------------------------------------------------ */

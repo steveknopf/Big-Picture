@@ -39,25 +39,15 @@ export default function SchedulePopup({ todo, onClose }) {
   }
 
   // dates and times are parallel arrays — each date gets whatever time sits
-  // at the same index (or no time, for an all-day custom assignment).
+  // at the same index (or no time, for an all-day custom assignment). One
+  // dispatch for the whole batch, so it's also one undo step.
   function applyDates(dates, times) {
     if (dates.length === 0) return
     dispatch({
-      type: 'SCHEDULE_TODO',
+      type: 'SCHEDULE_TODO_TO_DATES',
       id: todo.id,
-      date: dates[0],
-      time: times[0],
-      duration: times[0] ? 1 : null,
+      entries: dates.map((date, i) => ({ date, time: times[i], duration: times[i] ? 1 : null })),
     })
-    for (let i = 1; i < dates.length; i++) {
-      dispatch({
-        type: 'CLONE_TODO_TO_DATE',
-        sourceId: todo.id,
-        date: dates[i],
-        time: times[i],
-        duration: times[i] ? 1 : null,
-      })
-    }
   }
 
   function confirmRepeating() {
