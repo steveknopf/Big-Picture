@@ -50,7 +50,7 @@ export default function DayView({ skyOverlay, moonOverlay }) {
           aria-label="Clear everything scheduled on this day"
           title="Clear everything scheduled on this day"
         >
-          Clear day
+          Clear
         </button>
       </div>
 
