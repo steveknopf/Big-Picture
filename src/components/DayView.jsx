@@ -79,7 +79,7 @@ export default function DayView({ skyOverlay, moonOverlay }) {
         <div className="time-label">all day</div>
         <div className="day-allday-items">
           {todosFor(null).map((t) => (
-            <ScheduledChip key={t.id} todo={t} color={listColor[t.listId]} />
+            <ScheduledChip key={t.id} todo={t} color={listColor[t.listId]} showCheckbox />
           ))}
         </div>
       </DroppableSlot>
@@ -100,6 +100,7 @@ export default function DayView({ skyOverlay, moonOverlay }) {
                     gap={3}
                     index={i}
                     count={cellTodos.length}
+                    showCheckbox
                   />
                 ))
               })()}

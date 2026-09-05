@@ -485,11 +485,21 @@ button {
   opacity: 0.5;
 }
 
+.scheduled-chip-checkbox {
+  flex-shrink: 0;
+  cursor: pointer;
+}
+
 .scheduled-chip-text {
   flex: 1;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.scheduled-chip.completed .scheduled-chip-text {
+  text-decoration: line-through;
+  opacity: 0.6;
 }
 
 .scheduled-chip-remove {
@@ -536,6 +546,17 @@ button {
 
 .todo-chip.timed-block.dragging {
   opacity: 0.5;
+}
+
+.timed-block-checkbox {
+  vertical-align: middle;
+  margin-right: 4px;
+  cursor: pointer;
+}
+
+.timed-block.completed .timed-block-text {
+  text-decoration: line-through;
+  opacity: 0.6;
 }
 
 /* Grab the bottom edge of a scheduled block and drag to change its

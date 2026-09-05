@@ -3,7 +3,7 @@ import { useDraggable } from '@dnd-kit/core'
 import { useAppDispatch } from '../context/AppContext.jsx'
 import { useResizableDuration } from '../hooks/useResizableDuration.js'
 
-export default function TimedBlock({ todo, color, rowHeight, small, gap, index = 0, count = 1 }) {
+export default function TimedBlock({ todo, color, rowHeight, small, gap, index = 0, count = 1, showCheckbox }) {
   const dispatch = useAppDispatch()
   const { displayDuration, onResizeStart } = useResizableDuration(todo, rowHeight, dispatch)
 
@@ -25,7 +25,9 @@ export default function TimedBlock({ todo, color, rowHeight, small, gap, index =
   return (
     <div
       ref={setNodeRef}
-      className={`todo-chip timed-block ${small ? 'small' : ''} ${isDragging ? 'dragging' : ''}`}
+      className={`todo-chip timed-block ${small ? 'small' : ''} ${isDragging ? 'dragging' : ''} ${
+        todo.completed ? 'completed' : ''
+      }`}
       style={{
         background: color,
         height: `${displayDuration * rowHeight - gap}px`,
@@ -45,7 +47,17 @@ export default function TimedBlock({ todo, color, rowHeight, small, gap, index =
       >
         ×
       </button>
-      {todo.text}
+      {showCheckbox && (
+        <input
+          type="checkbox"
+          className="timed-block-checkbox"
+          checked={todo.completed}
+          onChange={() => dispatch({ type: 'TOGGLE_TODO', id: todo.id })}
+          onPointerDown={(e) => e.stopPropagation()}
+          aria-label={`Mark "${todo.text}" complete`}
+        />
+      )}
+      <span className="timed-block-text">{todo.text}</span>
       <div className="timed-block-handle" onPointerDown={onResizeStart} />
     </div>
   )
